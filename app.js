@@ -224,11 +224,7 @@ function updatePreview() {
     <div class="template-frame">
       <header class="report-header">
         <div class="brand-lockup">
-          <div class="brand-mark" aria-hidden="true">NM</div>
-          <div>
-            <strong>NM</strong>
-            <span>Engenharia & Consultoria</span>
-          </div>
+          <img src="assets/logo-nm.jpg" alt="NM Engenharia & Consultoria" />
         </div>
         <p class="eyebrow">Análise de risco em eventos esportivos</p>
         <h2>Relatório de Evento ${valueOrDash(f.numeroRelatorio)}</h2>
@@ -385,8 +381,9 @@ function makeReportFileName(data) {
 async function buildPdf(data) {
   const pdf = new SimplePdf();
   const f = data.fields;
+  const logo = await imageToJpeg("assets/logo-nm.jpg", 0.9);
 
-  pdf.addTemplateHeader(`Relatório de Evento ${f.numeroRelatorio || ""}`);
+  pdf.addTemplateHeader(`Relatório de Evento ${f.numeroRelatorio || ""}`, logo);
   pdf.addLine(`Tipo de evento: ${f.tipoEvento || "futebolístico"}`);
   pdf.addLine(`Equipes: ${f.equipes || "-"}`);
   pdf.addLine(`Data do evento: ${formatDate(f.dataEvento)}    Horário: ${f.horario || "-"}`);
@@ -417,6 +414,7 @@ async function buildPdf(data) {
     }
   }
 
+  pdf.addFinalFooter();
   return pdf.toBlob();
 }
 
@@ -445,16 +443,12 @@ class SimplePdf {
   addPageDecor() {
     this.current.lines.push("q 0.00 0.43 0.75 rg 0 0 18 841.89 re f Q");
     this.current.lines.push("q 0.95 0.42 0.06 rg 18 35 0.8 735 re f Q");
-    this.current.lines.push("q 0.00 0.22 0.48 rg 182 0 230 30 re f Q");
-    this.current.lines.push(`BT /F1 8.5 Tf 1 1 1 rg 218 17 Td (${pdfText("NM Engenharia e Consultoria • Segurança em Estádios")}) Tj ET`);
   }
 
-  addTemplateHeader(text) {
+  addTemplateHeader(text, logo) {
     this.ensure(112);
-    this.current.lines.push(`BT /F1 42 Tf 0.00 0.43 0.75 rg ${this.margin} ${this.y - 6} Td (${pdfText("NM")}) Tj ET`);
-    this.current.lines.push(`BT /F1 15 Tf 0.13 0.18 0.23 rg ${this.margin + 96} ${this.y - 2} Td (${pdfText("ENGENHARIA &")}) Tj ET`);
-    this.current.lines.push(`BT /F1 15 Tf 0.13 0.18 0.23 rg ${this.margin + 96} ${this.y - 22} Td (${pdfText("CONSULTORIA")}) Tj ET`);
-    this.y -= 72;
+    this.addImageAt(logo.bytes, logo.width, logo.height, this.margin, this.y - 76, 255, 110);
+    this.y -= 104;
     this.addHeading(text);
   }
 
@@ -525,6 +519,28 @@ class SimplePdf {
     this.y = y - 13;
     this.addWrapped(caption || "-", 0);
     this.y -= 8;
+  }
+
+  addImageAt(bytes, imageWidth, imageHeight, x, y, boxWidth, boxHeight) {
+    const ratio = Math.min(boxWidth / imageWidth, boxHeight / imageHeight);
+    const drawWidth = imageWidth * ratio;
+    const drawHeight = imageHeight * ratio;
+    const name = `Im${this.images.length + 1}`;
+    const image = { name, bytes, width: imageWidth, height: imageHeight };
+    this.images.push(image);
+    this.current.images.push(image);
+    this.current.lines.push(`q ${drawWidth.toFixed(2)} 0 0 ${drawHeight.toFixed(2)} ${x} ${(y + (boxHeight - drawHeight)).toFixed(2)} cm /${name} Do Q`);
+  }
+
+  addFinalFooter() {
+    this.ensure(78);
+    const y = 24;
+    this.current.lines.push(`q 0.95 0.42 0.06 rg ${this.margin} ${y + 44} ${this.contentWidth} 1.8 re f Q`);
+    this.current.lines.push(`q 0.00 0.14 0.36 rg 190 ${y} 220 38 re f Q`);
+    this.current.lines.push(`BT /F1 9 Tf 0.00 0.14 0.36 rg ${this.margin + 18} ${y + 17} Td (${pdfText("ANÁLISE DE RISCO")}) Tj ET`);
+    this.current.lines.push(`BT /F1 9 Tf 1 1 1 rg 216 ${y + 22} Td (${pdfText("NM Engenharia e Consultoria")}) Tj ET`);
+    this.current.lines.push(`BT /F1 8 Tf 1 1 1 rg 222 ${y + 10} Td (${pdfText("CNPJ 40.727.883/0001-50")}) Tj ET`);
+    this.current.lines.push(`BT /F1 9 Tf 0.00 0.14 0.36 rg 456 ${y + 17} Td (${pdfText("SEGURANÇA EM ESTÁDIOS")}) Tj ET`);
   }
 
   toBlob() {

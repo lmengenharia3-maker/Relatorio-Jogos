@@ -393,38 +393,14 @@ td input {
 .brand-lockup {
   display: flex;
   align-items: center;
-  gap: 16px;
-  color: var(--brand-dark);
+  max-width: 340px;
 }
 
-.brand-lockup strong {
+.brand-lockup img {
   display: block;
-  color: var(--brand);
-  font-size: 2.35rem;
-  line-height: 0.95;
-}
-
-.brand-lockup span {
-  display: block;
-  color: #27323d;
-  font-size: 0.98rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 62px;
-  height: 62px;
-  border: 5px solid var(--brand);
-  border-right-color: var(--accent);
-  border-bottom-color: var(--accent);
-  border-radius: 50%;
-  color: var(--brand);
-  font-size: 1rem;
-  font-weight: 900;
+  width: min(100%, 320px);
+  height: auto;
+  object-fit: contain;
 }
 
 .orange-rule {
