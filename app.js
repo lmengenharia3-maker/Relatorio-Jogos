@@ -319,7 +319,7 @@ function updatePreview() {
         : ""
     }
       <footer class="report-footer">
-        <span>Análise de Risco</span>
+        <span>Relatório de Partida</span>
         <strong>NM Engenharia e Consultoria</strong>
         <span>Segurança em Estádios</span>
       </footer>
@@ -584,7 +584,7 @@ class SimplePdf {
     const y = 24;
     this.current.lines.push(`q 0.95 0.42 0.06 rg ${this.margin} ${y + 44} ${this.contentWidth} 1.8 re f Q`);
     this.current.lines.push(`q 0.00 0.14 0.36 rg 190 ${y} 220 38 re f Q`);
-    this.current.lines.push(`BT /F1 9 Tf 0.00 0.14 0.36 rg ${this.margin + 18} ${y + 17} Td (${pdfText("ANÁLISE DE RISCO")}) Tj ET`);
+    this.current.lines.push(`BT /F1 9 Tf 0.00 0.14 0.36 rg ${this.margin + 18} ${y + 17} Td (${pdfText("RELATÓRIO DE PARTIDA")}) Tj ET`);
     this.current.lines.push(`BT /F1 9 Tf 1 1 1 rg 216 ${y + 22} Td (${pdfText("NM Engenharia e Consultoria")}) Tj ET`);
     this.current.lines.push(`BT /F1 8 Tf 1 1 1 rg 222 ${y + 10} Td (${pdfText("CNPJ 40.727.883/0001-50")}) Tj ET`);
     this.current.lines.push(`BT /F1 9 Tf 0.00 0.14 0.36 rg 456 ${y + 17} Td (${pdfText("SEGURANÇA EM ESTÁDIOS")}) Tj ET`);
