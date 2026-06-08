@@ -219,6 +219,7 @@ function updatePreview() {
   const data = collectData();
   const f = data.fields;
   const activeKpis = data.kpis.filter((item) => item.quantity || item.sector || item.note);
+  const chartKpis = data.kpis.filter((item) => item.quantity > 0);
 
   preview.innerHTML = `
     <div class="template-frame">
@@ -226,7 +227,6 @@ function updatePreview() {
         <div class="brand-lockup">
           <img src="assets/logo-nm.jpg" alt="NM Engenharia & Consultoria" />
         </div>
-        <p class="eyebrow">Análise de risco em eventos esportivos</p>
         <h2>Relatório de Evento ${valueOrDash(f.numeroRelatorio)}</h2>
         <div class="orange-rule"></div>
       <div class="report-meta">
@@ -269,7 +269,7 @@ function updatePreview() {
     </section>
 
     <section class="report-block">
-      <h3>Informações adicionais</h3>
+      <h3>Observação</h3>
       <p class="justified">${formatParagraphs(correctPortugueseText(f.informacoesAdicionais || "—"))}</p>
     </section>
 
@@ -294,6 +294,7 @@ function updatePreview() {
             .join("")}
         </tbody>
       </table>
+      ${renderBarChart(chartKpis)}
     </section>
 
     ${
@@ -322,6 +323,27 @@ function updatePreview() {
         <strong>NM Engenharia e Consultoria</strong>
         <span>Segurança em Estádios</span>
       </footer>
+    </div>
+  `;
+}
+
+function renderBarChart(items) {
+  if (!items.length) return "";
+  const max = Math.max(...items.map((item) => item.quantity), 1);
+  return `
+    <div class="bar-chart" aria-label="Gráfico de barras de ocorrências">
+      ${items
+        .map((item) => {
+          const width = Math.max(5, Math.round((item.quantity / max) * 100));
+          return `
+            <div class="bar-row">
+              <span>${escapeHtml(item.type)}</span>
+              <div class="bar-track"><i style="width: ${width}%"></i></div>
+              <strong>${item.quantity}</strong>
+            </div>
+          `;
+        })
+        .join("")}
     </div>
   `;
 }
@@ -397,7 +419,7 @@ async function buildPdf(data) {
     pdf.addWrapped(`${item.question}: ${item.status || "-"}`, 10);
   });
 
-  pdf.addSection("3. INFORMAÇÕES ADICIONAIS");
+  pdf.addSection("3. OBSERVAÇÃO");
   pdf.addParagraph(correctPortugueseText(f.informacoesAdicionais || "-"));
 
   pdf.addSection("ANEXO - DADOS ESTRATIFICADOS");
@@ -405,6 +427,7 @@ async function buildPdf(data) {
     if (!item.quantity && !item.sector && !item.note) return;
     pdf.addWrapped(`${item.type} | Qtd.: ${item.quantity || 0} | Setor: ${item.sector || "-"} | Obs.: ${item.note || "-"}`, 10);
   });
+  pdf.addBarChart(data.kpis.filter((item) => item.quantity > 0));
 
   if (data.photos.length) {
     pdf.addSection("RELATÓRIO FOTOGRÁFICO");
@@ -462,9 +485,9 @@ class SimplePdf {
 
   addSection(text) {
     this.ensure(34);
-    this.y -= 8;
+    this.y -= 10;
     this.current.lines.push(`BT /F1 12.5 Tf 0.00 0.14 0.36 rg ${this.margin} ${this.y} Td (${pdfText(text)}) Tj ET`);
-    this.y -= 20;
+    this.y -= 18;
   }
 
   addLine(text) {
@@ -530,6 +553,28 @@ class SimplePdf {
     this.images.push(image);
     this.current.images.push(image);
     this.current.lines.push(`q ${drawWidth.toFixed(2)} 0 0 ${drawHeight.toFixed(2)} ${x} ${(y + (boxHeight - drawHeight)).toFixed(2)} cm /${name} Do Q`);
+  }
+
+  addBarChart(items) {
+    if (!items.length) return;
+    this.ensure(58 + items.length * 20);
+    const chartTop = this.y - 8;
+    const labelWidth = 172;
+    const barWidth = this.contentWidth - labelWidth - 44;
+    const max = Math.max(...items.map((item) => item.quantity), 1);
+    this.current.lines.push(`BT /F1 10.5 Tf 0.00 0.14 0.36 rg ${this.margin} ${chartTop} Td (${pdfText("Gráfico de barras - ocorrências registradas")}) Tj ET`);
+    this.y = chartTop - 22;
+    items.forEach((item) => {
+      this.ensure(20);
+      const width = Math.max(3, (item.quantity / max) * barWidth);
+      const label = item.type.length > 31 ? `${item.type.slice(0, 30)}...` : item.type;
+      this.current.lines.push(`BT /F1 8.5 Tf 0 0 0 rg ${this.margin} ${this.y + 3} Td (${pdfText(label)}) Tj ET`);
+      this.current.lines.push(`q 0.90 0.94 0.97 rg ${this.margin + labelWidth} ${this.y} ${barWidth} 10 re f Q`);
+      this.current.lines.push(`q 0.00 0.43 0.75 rg ${this.margin + labelWidth} ${this.y} ${width.toFixed(2)} 10 re f Q`);
+      this.current.lines.push(`BT /F1 8.5 Tf 0 0 0 rg ${this.margin + labelWidth + barWidth + 8} ${this.y + 2} Td (${pdfText(String(item.quantity))}) Tj ET`);
+      this.y -= 18;
+    });
+    this.y -= 8;
   }
 
   addFinalFooter() {
