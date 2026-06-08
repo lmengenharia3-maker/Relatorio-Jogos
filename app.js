@@ -1,20 +1,20 @@
 const checklistItems = [
-  "Houve Reunião de Alinhamento",
+  "Houve reunião de alinhamento",
   "Posto Médico e/ou Ambulâncias disponibilizadas",
   "BEPE autorizou a abertura dos portões no horário previsto",
-  "Presença de alguma autoridade dos poderes (Gov/Pref/Pres. Tribunais)",
+  "Presença de alguma autoridade dos poderes públicos (governo, prefeitura ou tribunais)",
   "Portas das escadas N7 resguardadas com segurança",
   "Delegacia ativada para registro de ocorrências",
   "Saídas de emergência desobstruídas (escadas)",
   "Houve controle dos materiais da organizada pela PM",
   "Houve alguma ocorrência registrada nos estacionamentos",
-  "Houve presença de ambulantes, catadores de latas/garrafas no EDG",
+  "Houve presença de ambulantes, catadores de latas ou garrafas no EDG",
   "Indicações de saída fixadas em local visível",
   "Bombeiros Militares presentes no evento",
   "Controle externo de garrafas de vidro pela autoridade responsável",
   "Os elevadores disponibilizados estão em funcionamento pleno",
-  "Ações do ECB gerou algum impacto/incidente durante o jogo",
-  "Revista pessoal sendo apoiada pela Polícia Militar retaguarda",
+  "Ações do ECB geraram algum impacto ou incidente durante o jogo",
+  "Revista pessoal apoiada pela Polícia Militar na retaguarda",
   "Houve algum incidente registrado provocado pela organizada",
   "Houve presença de ambulantes nos portões de acesso",
 ];
@@ -221,9 +221,18 @@ function updatePreview() {
   const activeKpis = data.kpis.filter((item) => item.quantity || item.sector || item.note);
 
   preview.innerHTML = `
-    <header class="report-header">
-      <p class="eyebrow">NM Consultoria e Gestão</p>
-      <h2>Relatório de Evento ${valueOrDash(f.numeroRelatorio)}</h2>
+    <div class="template-frame">
+      <header class="report-header">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">NM</div>
+          <div>
+            <strong>NM</strong>
+            <span>Engenharia & Consultoria</span>
+          </div>
+        </div>
+        <p class="eyebrow">Análise de risco em eventos esportivos</p>
+        <h2>Relatório de Evento ${valueOrDash(f.numeroRelatorio)}</h2>
+        <div class="orange-rule"></div>
       <div class="report-meta">
         <span><strong>Tipo:</strong> ${valueOrDash(f.tipoEvento)}</span>
         <span><strong>Equipes:</strong> ${valueOrDash(f.equipes)}</span>
@@ -265,7 +274,7 @@ function updatePreview() {
 
     <section class="report-block">
       <h3>Informações adicionais</h3>
-      <p>${escapeHtml(f.informacoesAdicionais || "—").replaceAll("\n", "<br />")}</p>
+      <p class="justified">${formatParagraphs(correctPortugueseText(f.informacoesAdicionais || "—"))}</p>
     </section>
 
     <section class="report-block">
@@ -312,6 +321,12 @@ function updatePreview() {
         `
         : ""
     }
+      <footer class="report-footer">
+        <span>Análise de Risco</span>
+        <strong>NM Engenharia e Consultoria</strong>
+        <span>Segurança em Estádios</span>
+      </footer>
+    </div>
   `;
 }
 
@@ -325,6 +340,34 @@ function statusClass(status) {
 
 function valueOrDash(value) {
   return escapeHtml(value || "—");
+}
+
+function formatParagraphs(value) {
+  return escapeHtml(value)
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.replaceAll("\n", "<br />"))
+    .join("</p><p class=\"justified\">");
+}
+
+function correctPortugueseText(value) {
+  return String(value || "")
+    .replace(/\bocorrencias\b/gi, "ocorrências")
+    .replace(/\bocorrencia\b/gi, "ocorrência")
+    .replace(/\bseguranca\b/gi, "segurança")
+    .replace(/\borgaos\b/gi, "órgãos")
+    .replace(/\bpublico\b/gi, "público")
+    .replace(/\bhorario\b/gi, "horário")
+    .replace(/\bportoes\b/gi, "portões")
+    .replace(/\bestadios\b/gi, "estádios")
+    .replace(/\boperacional\b/gi, "operacional")
+    .replace(/\banalise\b/gi, "análise")
+    .replace(/\breuniao\b/gi, "reunião")
+    .replace(/\bmedico\b/gi, "médico")
+    .replace(/\bambulancias\b/gi, "ambulâncias")
+    .replace(/\bautoridade\b/gi, "autoridade")
+    .replace(/\bemergencia\b/gi, "emergência")
+    .replace(/\bpatrimonio\b/gi, "patrimônio")
+    .replace(/\bobservacao\b/gi, "observação");
 }
 
 function formatDate(value) {
@@ -343,35 +386,34 @@ async function buildPdf(data) {
   const pdf = new SimplePdf();
   const f = data.fields;
 
-  pdf.addTitle("NM CONSULTORIA E GESTAO");
-  pdf.addHeading(`Relatorio de Evento ${plain(f.numeroRelatorio || "")}`);
-  pdf.addLine(`Tipo Evento: ${plain(f.tipoEvento || "futebolistico")}`);
-  pdf.addLine(`Equipes: ${plain(f.equipes || "-")}`);
-  pdf.addLine(`Data do Evento: ${formatDate(f.dataEvento)}    Horario: ${plain(f.horario || "-")}`);
-  pdf.addLine(`Local do Evento: ${plain(f.localEvento || "-")}`);
-  pdf.addLine(`Area de interesse: ${plain(f.areaInteresse || "-")}`);
-  pdf.addLine(`Capacidade: ${plain(f.capacidade || "-")}    Expectativa: ${plain(f.expectativaPublico || "-")}    Publico: ${plain(f.quantidadePublico || "-")}`);
-  pdf.addLine(`Abertura dos portoes: ${plain(f.aberturaPortoes || "-")}    Bordero: ${plain(f.bordero || "-")}`);
+  pdf.addTemplateHeader(`Relatório de Evento ${f.numeroRelatorio || ""}`);
+  pdf.addLine(`Tipo de evento: ${f.tipoEvento || "futebolístico"}`);
+  pdf.addLine(`Equipes: ${f.equipes || "-"}`);
+  pdf.addLine(`Data do evento: ${formatDate(f.dataEvento)}    Horário: ${f.horario || "-"}`);
+  pdf.addLine(`Local do evento: ${f.localEvento || "-"}`);
+  pdf.addLine(`Área de interesse: ${f.areaInteresse || "-"}`);
+  pdf.addLine(`Capacidade: ${f.capacidade || "-"}    Expectativa: ${f.expectativaPublico || "-"}    Público: ${f.quantidadePublico || "-"}`);
+  pdf.addLine(`Abertura dos portões: ${f.aberturaPortoes || "-"}    Borderô: ${f.bordero || "-"}`);
 
-  pdf.addSection("2. INFORMACOES");
+  pdf.addSection("2. INFORMAÇÕES OPERACIONAIS");
   data.checks.forEach((item) => {
-    pdf.addWrapped(`${plain(item.question)}: ${plain(item.status || "-")}`, 10);
+    pdf.addWrapped(`${item.question}: ${item.status || "-"}`, 10);
   });
 
-  pdf.addSection("3. INFORMACOES ADICIONAIS");
-  pdf.addWrapped(plain(f.informacoesAdicionais || "-"));
+  pdf.addSection("3. INFORMAÇÕES ADICIONAIS");
+  pdf.addParagraph(correctPortugueseText(f.informacoesAdicionais || "-"));
 
   pdf.addSection("ANEXO - DADOS ESTRATIFICADOS");
   data.kpis.forEach((item) => {
     if (!item.quantity && !item.sector && !item.note) return;
-    pdf.addWrapped(`${plain(item.type)} | Qtd: ${item.quantity || 0} | Setor: ${plain(item.sector || "-")} | Obs: ${plain(item.note || "-")}`, 10);
+    pdf.addWrapped(`${item.type} | Qtd.: ${item.quantity || 0} | Setor: ${item.sector || "-"} | Obs.: ${item.note || "-"}`, 10);
   });
 
   if (data.photos.length) {
-    pdf.addSection("RELATORIO FOTOGRAFICO");
+    pdf.addSection("RELATÓRIO FOTOGRÁFICO");
     for (const photo of data.photos) {
       const jpeg = await imageToJpeg(photo.dataUrl);
-      pdf.addImage(jpeg.bytes, jpeg.width, jpeg.height, plain(photo.caption || photo.name));
+      pdf.addImage(jpeg.bytes, jpeg.width, jpeg.height, photo.caption || photo.name);
     }
   }
 
@@ -383,6 +425,7 @@ class SimplePdf {
     this.width = 595.28;
     this.height = 841.89;
     this.margin = 42;
+    this.contentWidth = this.width - this.margin * 2;
     this.pages = [];
     this.images = [];
     this.newPage();
@@ -392,34 +435,47 @@ class SimplePdf {
     this.current = { lines: [], images: [] };
     this.pages.push(this.current);
     this.y = this.height - this.margin;
+    this.addPageDecor();
   }
 
   ensure(space) {
     if (this.y - space < this.margin) this.newPage();
   }
 
-  addTitle(text) {
-    this.ensure(34);
-    this.current.lines.push(`BT /F1 13 Tf 0.06 0.25 0.18 rg ${this.margin} ${this.y} Td (${pdfEscape(text)}) Tj ET`);
-    this.y -= 22;
+  addPageDecor() {
+    this.current.lines.push("q 0.00 0.43 0.75 rg 0 0 18 841.89 re f Q");
+    this.current.lines.push("q 0.95 0.42 0.06 rg 18 35 0.8 735 re f Q");
+    this.current.lines.push("q 0.00 0.22 0.48 rg 182 0 230 30 re f Q");
+    this.current.lines.push(`BT /F1 8.5 Tf 1 1 1 rg 218 17 Td (${pdfText("NM Engenharia e Consultoria • Segurança em Estádios")}) Tj ET`);
+  }
+
+  addTemplateHeader(text) {
+    this.ensure(112);
+    this.current.lines.push(`BT /F1 42 Tf 0.00 0.43 0.75 rg ${this.margin} ${this.y - 6} Td (${pdfText("NM")}) Tj ET`);
+    this.current.lines.push(`BT /F1 15 Tf 0.13 0.18 0.23 rg ${this.margin + 96} ${this.y - 2} Td (${pdfText("ENGENHARIA &")}) Tj ET`);
+    this.current.lines.push(`BT /F1 15 Tf 0.13 0.18 0.23 rg ${this.margin + 96} ${this.y - 22} Td (${pdfText("CONSULTORIA")}) Tj ET`);
+    this.y -= 72;
+    this.addHeading(text);
   }
 
   addHeading(text) {
     this.ensure(36);
-    this.current.lines.push(`BT /F1 18 Tf 0.05 0.16 0.11 rg ${this.margin} ${this.y} Td (${pdfEscape(text)}) Tj ET`);
-    this.y -= 30;
+    this.current.lines.push(`BT /F1 21 Tf 0.00 0.14 0.36 rg ${this.margin} ${this.y} Td (${pdfText(text)}) Tj ET`);
+    this.y -= 9;
+    this.current.lines.push(`q 0.95 0.42 0.06 rg ${this.margin} ${this.y} 88 2 re f Q`);
+    this.y -= 24;
   }
 
   addSection(text) {
     this.ensure(34);
     this.y -= 8;
-    this.current.lines.push(`BT /F1 12 Tf 0.05 0.16 0.11 rg ${this.margin} ${this.y} Td (${pdfEscape(text)}) Tj ET`);
+    this.current.lines.push(`BT /F1 12.5 Tf 0.00 0.14 0.36 rg ${this.margin} ${this.y} Td (${pdfText(text)}) Tj ET`);
     this.y -= 20;
   }
 
   addLine(text) {
     this.ensure(18);
-    this.current.lines.push(`BT /F1 10 Tf 0 0 0 rg ${this.margin} ${this.y} Td (${pdfEscape(plain(text))}) Tj ET`);
+    this.current.lines.push(`BT /F1 10 Tf 0 0 0 rg ${this.margin} ${this.y} Td (${pdfText(text)}) Tj ET`);
     this.y -= 15;
   }
 
@@ -427,9 +483,32 @@ class SimplePdf {
     const max = indent ? 88 : 96;
     wrapText(text, max).forEach((line) => {
       this.ensure(16);
-      this.current.lines.push(`BT /F1 9.5 Tf 0 0 0 rg ${this.margin + indent} ${this.y} Td (${pdfEscape(plain(line))}) Tj ET`);
+      this.current.lines.push(`BT /F1 9.5 Tf 0 0 0 rg ${this.margin + indent} ${this.y} Td (${pdfText(line)}) Tj ET`);
       this.y -= 14;
     });
+  }
+
+  addParagraph(text) {
+    String(text || "-")
+      .split(/\n{2,}/)
+      .forEach((paragraph, index) => {
+        if (index) this.y -= 8;
+        const lines = wrapText(paragraph.replace(/\n/g, " "), 96);
+        lines.forEach((line, lineIndex) => {
+          this.ensure(16);
+          const shouldJustify = lineIndex < lines.length - 1 && line.trim().split(/\s+/).length > 3;
+          const wordSpacing = shouldJustify ? this.justifiedWordSpacing(line, 9.7, this.contentWidth) : 0;
+          this.current.lines.push(`BT /F1 9.7 Tf 0 0 0 rg ${wordSpacing.toFixed(2)} Tw ${this.margin} ${this.y} Td (${pdfText(line)}) Tj 0 Tw ET`);
+          this.y -= 15;
+        });
+      });
+  }
+
+  justifiedWordSpacing(line, fontSize, targetWidth) {
+    const gaps = line.trim().split(/\s+/).length - 1;
+    if (gaps <= 0) return 0;
+    const width = approximateTextWidth(line, fontSize);
+    return Math.max(0, Math.min(4.25, (targetWidth - width) / gaps));
   }
 
   addImage(bytes, imageWidth, imageHeight, caption) {
@@ -455,7 +534,7 @@ class SimplePdf {
       return objects.length;
     };
 
-    const fontId = addObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+    const fontId = addObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
     const imageIds = new Map();
     this.images.forEach((image) => {
       const header = `<< /Type /XObject /Subtype /Image /Width ${image.width} /Height ${image.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${image.bytes.length} >>\nstream\n`;
@@ -537,15 +616,60 @@ function wrapText(text, maxLength) {
   return lines.length ? lines : ["-"];
 }
 
-function plain(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\x20-\x7e]/g, "");
+function pdfText(value) {
+  return String(value ?? "")
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/–|—/g, "-")
+    .split("")
+    .map((char) => {
+      if (char === "\\") return "\\\\";
+      if (char === "(") return "\\(";
+      if (char === ")") return "\\)";
+      const code = winAnsiCode(char);
+      if (code >= 32 && code <= 126) return char;
+      if (code >= 128 && code <= 255) return `\\${code.toString(8).padStart(3, "0")}`;
+      return "";
+    })
+    .join("");
 }
 
-function pdfEscape(value) {
-  return String(value).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+function winAnsiCode(char) {
+  const special = {
+    "€": 128,
+    "‚": 130,
+    "ƒ": 131,
+    "„": 132,
+    "…": 133,
+    "†": 134,
+    "‡": 135,
+    "ˆ": 136,
+    "‰": 137,
+    "Š": 138,
+    "‹": 139,
+    "Œ": 140,
+    "Ž": 142,
+    "•": 149,
+    "™": 153,
+    "š": 154,
+    "›": 155,
+    "œ": 156,
+    "ž": 158,
+    "Ÿ": 159,
+  };
+  return special[char] || char.charCodeAt(0);
+}
+
+function approximateTextWidth(text, fontSize) {
+  const compact = String(text || "").replace(/\s+/g, " ");
+  let units = 0;
+  for (const char of compact) {
+    if ("ilI.,' ".includes(char)) units += 240;
+    else if ("MW@#".includes(char)) units += 820;
+    else if (/[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(char)) units += 650;
+    else units += 510;
+  }
+  return (units / 1000) * fontSize;
 }
 
 function asciiBytes(value) {

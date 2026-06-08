@@ -1,6 +1,6 @@
 # Relatório de Jogos
 
-Aplicação estática para preencher o modelo `Modelo de Relatorio Jogos.xlsx` no navegador e baixar o relatório em PDF.
+Aplicação estática para preencher o modelo `Modelo de Relatorio Jogos.xlsx` no navegador e baixar o relatório em PDF, com layout institucional da NM Engenharia e Consultoria.
 
 ## Como usar localmente
 
