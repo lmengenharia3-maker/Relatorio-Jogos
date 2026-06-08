@@ -227,6 +227,9 @@ textarea:focus {
 
 .radio-pill input {
   position: absolute;
+  width: 1px;
+  min-width: 0;
+  height: 1px;
   opacity: 0;
   pointer-events: none;
 }
@@ -262,8 +265,13 @@ th {
 }
 
 td input {
-  min-width: 88px;
+  min-width: 0;
   padding: 8px;
+}
+
+#kpiTable input {
+  width: 100%;
+  min-width: 0;
 }
 
 .file-drop {
@@ -355,7 +363,7 @@ td input {
     linear-gradient(135deg, rgba(0, 110, 184, 0.12) 0 7%, transparent 7%),
     linear-gradient(315deg, rgba(0, 47, 104, 0.1) 0 9%, transparent 9%),
     #fff;
-  padding: 42px 48px 96px 64px;
+  padding: 44px 56px 100px 72px;
 }
 
 .template-frame::before {
@@ -381,8 +389,8 @@ td input {
   position: relative;
   z-index: 1;
   border-bottom: 0;
-  padding-bottom: 16px;
-  margin-bottom: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .report-header h2 {
@@ -408,7 +416,7 @@ td input {
 .orange-rule {
   width: 112px;
   height: 3px;
-  margin: 0 0 18px;
+  margin: 0 0 16px;
   background: var(--accent);
 }
 
@@ -416,39 +424,104 @@ td input {
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 9px 20px;
+  gap: 8px 24px;
   line-height: 1.42;
+  font-size: 0.88rem;
+}
+
+.report-meta span,
+.summary-grid span {
+  min-width: 0;
+  border-bottom: 1px solid rgba(0, 47, 104, 0.08);
+  padding-bottom: 5px;
 }
 
 .report-block {
   position: relative;
   z-index: 1;
-  margin-top: 20px;
+  margin-top: 18px;
+  padding-top: 2px;
 }
 
 .report-block h3 {
-  margin-bottom: 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
   color: var(--brand-dark);
   font-size: 1.02rem;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
-.report-block p,
+.report-block h3::before {
+  width: 8px;
+  height: 24px;
+  border-radius: 99px;
+  background: var(--accent);
+  content: "";
+}
+
+.observation-text {
+  display: grid;
+  gap: 10px;
+}
+
+.observation-text p,
 .justified {
+  margin: 0;
   text-align: justify;
   text-justify: inter-word;
-  line-height: 1.65;
+  hyphens: auto;
+  line-height: 1.58;
+  font-size: 0.9rem;
 }
 
 .mini-table {
   width: 100%;
   min-width: 0;
-  font-size: 0.82rem;
+  table-layout: fixed;
+  border: 1px solid #e2e9e5;
+  font-size: 0.8rem;
 }
 
 .mini-table th,
 .mini-table td {
-  padding: 7px 8px;
+  padding: 7px 9px;
+}
+
+.mini-table th {
+  background: #f4f8fb;
+}
+
+.operational-table td:first-child {
+  width: auto;
+}
+
+.operational-table td:nth-child(2) {
+  width: 112px;
+  text-align: center;
+}
+
+.kpi-report-table td:first-child,
+.kpi-report-table th:first-child {
+  width: 38%;
+}
+
+.kpi-report-table td:nth-child(2),
+.kpi-report-table th:nth-child(2) {
+  width: 62px;
+  text-align: center;
+}
+
+.kpi-report-table td:nth-child(3),
+.kpi-report-table th:nth-child(3) {
+  width: 22%;
+}
+
+.kpi-report-table td:nth-child(4),
+.kpi-report-table th:nth-child(4) {
+  width: auto;
 }
 
 .status-sim {
@@ -495,10 +568,10 @@ td input {
 .bar-chart {
   display: grid;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 14px;
   border: 1px solid #d9e7ef;
   border-radius: 6px;
-  padding: 12px;
+  padding: 12px 14px;
   background: rgba(234, 244, 251, 0.52);
 }
 
@@ -584,7 +657,7 @@ td input {
     bottom: 10px;
     left: 10px;
     z-index: 20;
-    width: 100%;
+    width: auto;
     max-width: calc(100% - 20px);
     justify-content: stretch;
     gap: 6px;
@@ -639,6 +712,25 @@ td input {
     color: var(--brand-dark);
   }
 
+  .mini-table {
+    table-layout: auto;
+    font-size: 0.78rem;
+  }
+
+  .operational-table td:first-child,
+  .operational-table td:nth-child(2),
+  .kpi-report-table td:first-child,
+  .kpi-report-table th:first-child,
+  .kpi-report-table td:nth-child(2),
+  .kpi-report-table th:nth-child(2),
+  .kpi-report-table td:nth-child(3),
+  .kpi-report-table th:nth-child(3),
+  .kpi-report-table td:nth-child(4),
+  .kpi-report-table th:nth-child(4) {
+    width: auto;
+    text-align: left;
+  }
+
   .check-row {
     grid-template-columns: 1fr;
   }
@@ -691,7 +783,7 @@ td input {
     border: 0;
     border-radius: 0;
     background: white;
-    padding: 16mm 15mm 28mm 19mm;
+    padding: 15mm 16mm 28mm 20mm;
   }
 
   .template-frame::before,
@@ -713,5 +805,11 @@ td input {
   .bar-chart,
   .preview-photos figure {
     break-inside: avoid;
+  }
+
+  .observation-text p,
+  .justified {
+    orphans: 3;
+    widows: 3;
   }
 }

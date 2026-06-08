@@ -252,7 +252,7 @@ function updatePreview() {
 
     <section class="report-block">
       <h3>Informações operacionais</h3>
-      <table class="mini-table">
+      <table class="mini-table operational-table">
         <tbody>
           ${data.checks
             .map(
@@ -270,12 +270,12 @@ function updatePreview() {
 
     <section class="report-block">
       <h3>Observação</h3>
-      <p class="justified">${formatParagraphs(correctPortugueseText(f.informacoesAdicionais || "—"))}</p>
+      <div class="observation-text">${formatParagraphs(correctPortugueseText(f.informacoesAdicionais || "—"))}</div>
     </section>
 
     <section class="report-block">
       <h3>Dados estratificados</h3>
-      <table class="mini-table">
+      <table class="mini-table kpi-report-table">
         <thead>
           <tr><th>Ocorrência</th><th>Qtd.</th><th>Setor</th><th>Observação</th></tr>
         </thead>
@@ -363,8 +363,10 @@ function valueOrDash(value) {
 function formatParagraphs(value) {
   return escapeHtml(value)
     .split(/\n{2,}/)
-    .map((paragraph) => paragraph.replaceAll("\n", "<br />"))
-    .join("</p><p class=\"justified\">");
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p class="justified">${paragraph.replaceAll("\n", "<br />")}</p>`)
+    .join("");
 }
 
 function correctPortugueseText(value) {
