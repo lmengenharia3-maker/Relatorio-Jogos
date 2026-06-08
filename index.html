@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Relatório de Jogos</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">NM Consultoria e Gestão</p>
+        <h1>Relatório de Jogos</h1>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="clearForm" type="button">Limpar</button>
+        <button class="secondary" id="saveDraft" type="button">Salvar rascunho</button>
+        <button class="primary" id="downloadPdf" type="button">Baixar PDF</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <form id="reportForm" class="form-pane">
+        <section class="panel">
+          <div class="section-title">
+            <span>1</span>
+            <h2>Identificações gerais do evento</h2>
+          </div>
+          <div class="grid two">
+            <label>
+              Relatório nº
+              <input name="numeroRelatorio" autocomplete="off" />
+            </label>
+            <label>
+              Tipo de evento
+              <input name="tipoEvento" value="futebolístico" />
+            </label>
+            <label>
+              Equipes
+              <input name="equipes" />
+            </label>
+            <label>
+              Horário
+              <input name="horario" type="time" />
+            </label>
+            <label>
+              Data do evento
+              <input name="dataEvento" type="date" />
+            </label>
+            <label>
+              Local do evento
+              <input name="localEvento" />
+            </label>
+            <label>
+              Área de interesse
+              <input name="areaInteresse" />
+            </label>
+            <label>
+              Capacidade do local
+              <input name="capacidade" inputmode="numeric" />
+            </label>
+            <label>
+              Expectativa de público
+              <input name="expectativaPublico" inputmode="numeric" />
+            </label>
+            <label>
+              Quantidade de público
+              <input name="quantidadePublico" inputmode="numeric" />
+            </label>
+            <label>
+              Abertura dos portões
+              <input name="aberturaPortoes" type="time" />
+            </label>
+            <label>
+              Borderô
+              <input name="bordero" />
+            </label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title">
+            <span>2</span>
+            <h2>Informações operacionais</h2>
+          </div>
+          <div id="checklist" class="checklist"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title">
+            <span>3</span>
+            <h2>Informações adicionais</h2>
+          </div>
+          <label>
+            Descrição complementar
+            <textarea name="informacoesAdicionais" rows="8"></textarea>
+          </label>
+        </section>
+
+        <section class="panel">
+          <div class="section-title">
+            <span>4</span>
+            <h2>Anexo - Dados estratificados</h2>
+          </div>
+          <div class="table-wrap">
+            <table id="kpiTable">
+              <thead>
+                <tr>
+                  <th>Tipo de ocorrência</th>
+                  <th>Quantidade</th>
+                  <th>Setor</th>
+                  <th>Observação</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title">
+            <span>5</span>
+            <h2>Relatório fotográfico</h2>
+          </div>
+          <label class="file-drop">
+            <input id="photoInput" type="file" accept="image/*" multiple />
+            <strong>Selecionar fotos</strong>
+            <small>As imagens selecionadas entram no PDF com legenda opcional.</small>
+          </label>
+          <div id="photoList" class="photo-list"></div>
+        </section>
+      </form>
+
+      <aside class="preview-pane">
+        <div class="preview-toolbar">
+          <strong>Prévia do relatório</strong>
+          <button class="secondary compact" id="printPreview" type="button">Imprimir</button>
+        </div>
+        <article id="reportPreview" class="report-preview"></article>
+      </aside>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
